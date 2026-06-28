@@ -11,3 +11,6 @@ openssl = { version = "0.10", features = ["vendored"] }
 hbb_common = { path = "libs/hbb_common" }
 libc = "0.2"
 
+[patch.crates-io]
+libsodium-sys = { git = "https://github.com/sodiumoxide/sodiumoxide", package = "libsodium-sys" }
+
