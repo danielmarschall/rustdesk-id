@@ -78,11 +78,33 @@ jobs:
 
           echo "SODIUM_LIB_DIR=$($root.FullName)\Win32\Release\v142" >> $env:GITHUB_ENV
 
-      - name: Verify libsodium
+
+      - name: Find libsodium
+        if: matrix.target == 'i686-pc-windows-msvc'
         shell: pwsh
         run: |
-          Write-Host "SODIUM_LIB_DIR=$env:SODIUM_LIB_DIR"
-          Get-ChildItem $env:SODIUM_LIB_DIR
+          $lib = Get-ChildItem "$env:USERPROFILE\.cargo\git\checkouts" `
+              -Recurse `
+              -Filter libsodium.lib |
+              Where-Object {
+                  $_.FullName -like "*Win32*Release*v142*"
+              } |
+              Select-Object -First 1
+
+          if (-not $lib) {
+              throw "libsodium.lib not found"
+          }
+
+          $dir = Split-Path $lib.FullName -Parent
+
+          Write-Host "Found: $dir"
+
+          "SODIUM_LIB_DIR=$dir" | Out-File `
+              -FilePath $env:GITHUB_ENV `
+              -Append `
+              -Encoding utf8
+
+
 
       - name: Build
         env:
