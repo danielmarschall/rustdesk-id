@@ -35,10 +35,10 @@ jobs:
 
       - uses: lukka/run-vcpkg@v11
 
-      - name: Install vcpkg packages
+      - name: Install manifest dependencies
         shell: pwsh
         run: |
-          vcpkg install libsodium:${{ matrix.triplet }}
+          vcpkg install --triplet ${{ matrix.triplet }}
 
       - uses: Swatinem/rust-cache@v2
 
