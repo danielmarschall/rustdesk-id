@@ -2,6 +2,10 @@ name: Build DLL
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - master
+      - main
 
 jobs:
 
@@ -17,20 +21,26 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
           targets: |
             x86_64-pc-windows-msvc
             i686-pc-windows-msvc
 
-      - uses: Swatinem/rust-cache@v2
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
 
       - name: Build
         run: cargo build --release --target ${{ matrix.target }}
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: rustdeskid-${{ matrix.target }}
           path: target/${{ matrix.target }}/release/*.dll
