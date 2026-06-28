@@ -48,6 +48,23 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
+      - name: Inspect libsodium package
+        shell: pwsh
+        run: |
+          Get-ChildItem "$env:USERPROFILE\.cargo\git\checkouts" -Recurse -Directory -Filter msvc |
+            ForEach-Object {
+              Write-Host "MSVC dir: $($_.FullName)"
+              Get-ChildItem $_.FullName -Recurse
+            }
+
+      - name: Show environment
+        shell: pwsh
+        run: |
+          rustc -vV
+          echo HOST=$env:HOST
+          echo TARGET=$env:TARGET
+          echo CARGO_BUILD_TARGET=$env:CARGO_BUILD_TARGET
+
       - name: Cargo verbose
         shell: pwsh
         run: |
