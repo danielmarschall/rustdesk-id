@@ -1,37 +1,36 @@
-name: RustDeskID Build
+name: Build DLL
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
-      - main
 
 jobs:
 
-  windows:
+  build:
 
     runs-on: windows-latest
 
+    strategy:
+      matrix:
+        target:
+          - x86_64-pc-windows-msvc
+          - i686-pc-windows-msvc
+
     steps:
 
-    - uses: actions/checkout@v4
-      with:
-        submodules: recursive
+      - uses: actions/checkout@v4
 
-    - name: Install Rust
-      uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: |
+            x86_64-pc-windows-msvc
+            i686-pc-windows-msvc
 
-    - name: Cache Cargo
-      uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@v2
 
-    - name: Build DLL
-      run: cargo build --release
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
 
-    - name: Upload DLL
-      uses: actions/upload-artifact@v4
-      with:
-        name: rustdeskid-windows
-        path: |
-          target/release/*.dll
-          target/release/*.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rustdeskid-${{ matrix.target }}
+          path: target/${{ matrix.target }}/release/*.dll
