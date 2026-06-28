@@ -30,10 +30,10 @@ jobs:
           submodules: recursive
 
       - name: Dependency tree
-          shell: pwsh
-          run: |
-            cargo tree -i libsodium-sys
-            cargo tree -i sodiumoxide
+        shell: pwsh
+        run: |
+          cargo tree -i libsodium-sys
+          cargo tree -i sodiumoxide
 
       - uses: dtolnay/rust-toolchain@stable
         with:
