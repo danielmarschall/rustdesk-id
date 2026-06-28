@@ -1,0 +1,13 @@
+[package]
+name = "rustdeskid"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+openssl = { version = "0.10", features = ["vendored"] }
+hbb_common = { path = "libs/hbb_common" }
+libc = "0.2"
+
