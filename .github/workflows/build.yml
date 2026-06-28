@@ -1,0 +1,37 @@
+name: RustDeskID Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+
+  windows:
+
+    runs-on: windows-latest
+
+    steps:
+
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Cache Cargo
+      uses: Swatinem/rust-cache@v2
+
+    - name: Build DLL
+      run: cargo build --release
+
+    - name: Upload DLL
+      uses: actions/upload-artifact@v4
+      with:
+        name: rustdeskid-windows
+        path: |
+          target/release/*.dll
+          target/release/*.exe
