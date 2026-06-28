@@ -8,39 +8,47 @@ on:
       - main
 
 jobs:
-
   build:
 
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     strategy:
       matrix:
-        target:
-          - x86_64-pc-windows-msvc
-          - i686-pc-windows-msvc
+        include:
+          - target: x86_64-pc-windows-msvc
+            arch: x64
+            triplet: x64-windows-static
+
+          - target: i686-pc-windows-msvc
+            arch: x86
+            triplet: x86-windows-static
 
     steps:
 
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: |
-            x86_64-pc-windows-msvc
-            i686-pc-windows-msvc
+          targets: ${{ matrix.target }}
 
-      - name: Cache Cargo
-        uses: Swatinem/rust-cache@v2
+      - uses: lukka/run-vcpkg@v11
+
+      - name: Install vcpkg packages
+        shell: pwsh
+        run: |
+          vcpkg install libsodium:${{ matrix.triplet }}
+
+      - uses: Swatinem/rust-cache@v2
 
       - name: Build
+        env:
+          VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
+          VCPKG_DEFAULT_HOST_TRIPLET: ${{ matrix.triplet }}
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: rustdeskid-${{ matrix.target }}
+          name: rustdeskid-${{ matrix.arch }}
           path: target/${{ matrix.target }}/release/*.dll
