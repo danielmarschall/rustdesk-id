@@ -7,9 +7,6 @@ on:
       - master
       - main
 
-env:
-  SODIUM_STATIC: "1"
-
 jobs:
   build:
 
@@ -78,6 +75,17 @@ jobs:
 
           echo "SODIUM_LIB_DIR=$($root.FullName)\Win32\Release\v142" >> $env:GITHUB_ENV
 
+      - name: Show libsodium build.rs
+        shell: pwsh
+        run: |
+          $f = Get-ChildItem "$env:USERPROFILE\.cargo\git\checkouts" `
+            -Recurse `
+            -Filter build.rs |
+            Where-Object { $_.FullName -like "*libsodium-sys*" } |
+            Select-Object -First 1
+
+          Write-Host $f.FullName
+          Get-Content $f.FullName
 
       - name: Find libsodium
         if: matrix.target == 'i686-pc-windows-msvc'
@@ -103,8 +111,6 @@ jobs:
               -FilePath $env:GITHUB_ENV `
               -Append `
               -Encoding utf8
-
-
 
       - name: Build
         env:
