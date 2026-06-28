@@ -29,12 +29,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Dependency tree
-        shell: pwsh
-        run: |
-          cargo tree -i libsodium-sys
-          cargo tree -i sodiumoxide
-
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
@@ -48,46 +42,7 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
-      - name: Inspect libsodium package
-        shell: pwsh
-        run: |
-          Get-ChildItem "$env:USERPROFILE\.cargo\git\checkouts" -Recurse -Directory -Filter msvc |
-            ForEach-Object {
-              Write-Host "MSVC dir: $($_.FullName)"
-              Get-ChildItem $_.FullName -Recurse
-            }
-
-      - name: Show environment
-        shell: pwsh
-        run: |
-          rustc -vV
-          echo HOST=$env:HOST
-          echo TARGET=$env:TARGET
-          echo CARGO_BUILD_TARGET=$env:CARGO_BUILD_TARGET
-
-      - name: Force x86 libsodium
-        if: matrix.target == 'i686-pc-windows-msvc'
-        shell: pwsh
-        run: |
-          $root = Get-ChildItem "$env:USERPROFILE\.cargo\git\checkouts" -Recurse -Directory |
-            Where-Object { $_.FullName -like "*libsodium-sys\\msvc" } |
-            Select-Object -First 1
-
-          echo "SODIUM_LIB_DIR=$($root.FullName)\Win32\Release\v142" >> $env:GITHUB_ENV
-
-      - name: Show libsodium build.rs
-        shell: pwsh
-        run: |
-          $f = Get-ChildItem "$env:USERPROFILE\.cargo\git\checkouts" `
-            -Recurse `
-            -Filter build.rs |
-            Where-Object { $_.FullName -like "*libsodium-sys*" } |
-            Select-Object -First 1
-
-          Write-Host $f.FullName
-          Get-Content $f.FullName
-
-      - name: Find libsodium
+      - name: Find libsodium x86
         if: matrix.target == 'i686-pc-windows-msvc'
         shell: pwsh
         run: |

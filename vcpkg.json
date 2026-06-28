@@ -1,7 +1,4 @@
 {
-  "dependencies": [
-    "libsodium"
-  ],
   "vcpkg-configuration": {
     "default-registry": {
       "kind": "builtin",
