@@ -49,9 +49,9 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Cargo verbose
-          shell: pwsh
-          run: |
-            cargo build --release --target ${{ matrix.target }} -vv
+        shell: pwsh
+        run: |
+          cargo build --release --target ${{ matrix.target }} -vv
 
       - name: Build
         env:
