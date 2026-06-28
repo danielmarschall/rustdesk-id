@@ -29,6 +29,12 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Dependency tree
+          shell: pwsh
+          run: |
+            cargo tree -i libsodium-sys
+            cargo tree -i sodiumoxide
+
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
@@ -41,6 +47,11 @@ jobs:
           vcpkg install --triplet ${{ matrix.triplet }}
 
       - uses: Swatinem/rust-cache@v2
+
+      - name: Cargo verbose
+          shell: pwsh
+          run: |
+            cargo build --release --target ${{ matrix.target }} -vv
 
       - name: Build
         env:
