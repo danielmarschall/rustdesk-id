@@ -65,10 +65,15 @@ jobs:
           echo TARGET=$env:TARGET
           echo CARGO_BUILD_TARGET=$env:CARGO_BUILD_TARGET
 
-      - name: Cargo verbose
+      - name: Force x86 libsodium
+        if: matrix.target == 'i686-pc-windows-msvc'
         shell: pwsh
         run: |
-          cargo build --release --target ${{ matrix.target }} -vv
+          $root = Get-ChildItem "$env:USERPROFILE\.cargo\git\checkouts" -Recurse -Directory |
+            Where-Object { $_.FullName -like "*libsodium-sys\\msvc" } |
+            Select-Object -First 1
+
+          echo "SODIUM_LIB_DIR=$($root.FullName)\Win32\Release\v142" >> $env:GITHUB_ENV
 
       - name: Build
         env:
